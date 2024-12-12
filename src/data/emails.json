@@ -1,0 +1,213 @@
+{
+    "emails": [
+      {
+        "id": 1,
+        "sender": "John Doe",
+        "subject": "Project Update - Q4 Development Milestones",
+        "preview": "Detailed progress report on our current software development sprint...",
+        "time": "10:30 AM",
+        "starred": false,
+        "selected": false,
+        "category": "work",
+        "content": "Dear Team,\n\nI'm writing to provide a comprehensive update on our Q4 development milestones. We've successfully completed the initial phase of the backend infrastructure redesign, with 87% of the proposed architectural changes implemented. Key achievements include:\n\n- Migrating legacy systems to microservices architecture\n- Reducing database query response times by 42%\n- Implementing robust error logging mechanisms\n\nWe're on track to meet our end-of-quarter delivery targets. Please review the attached detailed report and provide any feedback.\n\nBest regards,\nJohn Doe\nSenior Project Manager"
+      },
+      {
+        "id": 2,
+        "sender": "Marketing Team",
+        "subject": "Q3 Quarterly Marketing Performance Report",
+        "preview": "Comprehensive analysis of our marketing campaigns and key performance indicators...",
+        "time": "9:15 AM",
+        "starred": true,
+        "selected": false,
+        "category": "report",
+        "content": "Hello Leadership Team,\n\nPlease find attached our Q3 Marketing Performance Report. Highlights include:\n\n- Social media engagement increased by 65%\n- Conversion rates improved from 2.3% to 3.7%\n- Successful launch of our new brand positioning campaign\n\nKey challenges and recommendations are detailed in the full report. We'll be scheduling a comprehensive review meeting next week.\n\nRegards,\nMarketing Strategy Team"
+      },
+      {
+        "id": 3,
+        "sender": "customer.support@techcompany.com",
+        "subject": "Support Ticket #45672 - Troubleshooting Request",
+        "preview": "Assistance needed with software installation and configuration issues...",
+        "time": "2:45 PM",
+        "starred": false,
+        "selected": false,
+        "category": "support",
+        "content": "Dear Valued Customer,\n\nThank you for reaching out about the installation issues you're experiencing with our software. Based on the details you provided, it appears there might be a compatibility conflict with your current system configuration.\n\nCould you please provide the following information:\n1. Operating system version\n2. Available disk space\n3. Firewall and antivirus settings\n\nOur support team is committed to resolving your issue as quickly as possible. We apologize for any inconvenience.\n\nBest regards,\nTech Support Team\nTicket #45672"
+      },
+      {
+        "id": 4,
+        "sender": "Sarah Jenkins",
+        "subject": "Lunch Meetup this Friday",
+        "preview": "Casual invitation for a catch-up lunch at the new downtown cafe...",
+        "time": "11:20 AM",
+        "starred": false,
+        "selected": false,
+        "category": "personal",
+        "content": "Hey there!\n\nIt's been way too long since we've caught up. Want to grab lunch this Friday at that new cafe downtown - Brew & Bite? I hear they have amazing avocado toast and great coffee.\n\nLet me know if you're free around 12:30 PM. No pressure if you can't make it!\n\nCheers,\nSarah"
+      },
+      {
+        "id": 5,
+        "sender": "sales@officefurniture.com",
+        "subject": "Special Corporate Discount - Office Furniture Sale",
+        "preview": "Exclusive offer for bulk office furniture purchase with significant discounts...",
+        "time": "8:50 AM",
+        "starred": false,
+        "selected": false,
+        "category": "sales",
+        "content": "Dear Valued Business Partner,\n\nWe're excited to offer you an exclusive corporate discount of 35% on our entire office furniture collection. With our ergonomic designs and premium quality, we can help transform your workspace.\n\nOffer Details:\n- 35% off entire catalog\n- Free delivery for orders over $5,000\n- Customization options available\n- Valid until end of month\n\nBook a consultation or view our catalog online.\n\nBest regards,\nSales Team\nOffice Furniture Experts"
+      },
+      {
+        "id": 6,
+        "sender": "hr.recruitment@megacorp.com",
+        "subject": "Interview Invitation - Senior Software Engineer Position",
+        "preview": "Next steps in the recruitment process for the senior software engineer role...",
+        "time": "3:15 PM",
+        "starred": true,
+        "selected": false,
+        "category": "professional",
+        "content": "Dear Candidate,\n\nFollowing your impressive application, we would like to invite you to the next stage of our recruitment process for the Senior Software Engineer position.\n\nInterview Details:\n- Date: Next Wednesday\n- Time: 2:00 PM EST\n- Format: Video interview via Zoom\n- Interviewers: Technical Lead and Engineering Manager\n\nPlease confirm your availability and provide your preferred Zoom contact.\n\nSincerely,\nHR Recruitment Team\nMegaCorp Technologies"
+      },
+      {
+        "id": 7,
+        "sender": "billing@utilities.com",
+        "subject": "Monthly Utility Bill - November Statement",
+        "preview": "Your monthly utility bill with detailed breakdown of charges...",
+        "time": "7:30 AM",
+        "starred": false,
+        "selected": false,
+        "category": "bill",
+        "content": "Account Holder,\n\nPlease find your November utility bill attached. Total amount due: $127.45\n\nBreakdown:\n- Electricity: $82.30\n- Water: $35.15\n- Service Fees: $10.00\n\nPayment is due by December 15th. Multiple payment options are available online.\n\nRegards,\nUtility Billing Department"
+      },
+      {
+        "id": 8,
+        "sender": "research.team@university.edu",
+        "subject": "Research Grant Application - Submission Reminder",
+        "preview": "Important deadline approaching for annual research grant applications...",
+        "time": "9:45 AM",
+        "starred": true,
+        "selected": false,
+        "category": "academic",
+        "content": "Dear Research Faculty,\n\nThis is a critical reminder about the upcoming research grant application deadline. Key details:\n\n- Submission Deadline: December 15th\n- Required Documents:\n  1. Comprehensive research proposal\n  2. Budget breakdown\n  3. CV and publication list\n\nLate submissions will not be considered. Contact the grants office for any queries.\n\nBest wishes,\nResearch Grants Committee"
+      },
+      {
+        "id": 9,
+        "sender": "complaints@retailstore.com",
+        "subject": "Response to Product Return Request #12345",
+        "preview": "Follow-up on your recent product return and refund request...",
+        "time": "11:10 AM",
+        "starred": false,
+        "selected": false,
+        "category": "complaint",
+        "content": "Dear Valued Customer,\n\nWe apologize for the inconvenience with your recent purchase. Your return request #12345 has been processed:\n\n- Refund Amount: $89.99\n- Processing Time: 3-5 business days\n- Refund Method: Original payment method\n\nWe value your feedback and hope to serve you better in the future.\n\nSincerely,\nCustomer Service Team"
+      },
+      {
+        "id": 10,
+        "sender": "legal.department@corporation.com",
+        "subject": "Confidential - Contract Review Request",
+        "preview": "Internal legal review needed for upcoming partnership agreement...",
+        "time": "4:20 PM",
+        "starred": true,
+        "selected": false,
+        "category": "legal",
+        "content": "Confidential Memorandum\n\nRequesting immediate legal review of the proposed partnership agreement with TechInnovate Solutions. Key points requiring scrutiny:\n\n- Intellectual Property Clauses\n- Liability Limitations\n- Termination Conditions\n\nPlease provide comprehensive feedback by end of week.\n\nRegards,\nExecutive Management"
+      },
+      {
+        "id": 11,
+        "sender": "product.team@startup.com",
+        "subject": "Beta Tester Invitation - New Mobile App",
+        "preview": "Exclusive opportunity to test our upcoming mobile application...",
+        "time": "10:05 AM",
+        "starred": false,
+        "selected": false,
+        "category": "invitation",
+        "content": "Hi Beta Tester,\n\nCongratulations! You've been selected for our exclusive mobile app beta testing program. As a valued community member, you'll get early access to features before public release.\n\nProgram Highlights:\n- 30-day exclusive access\n- Bug reporting platform\n- Potential rewards for detailed feedback\n\nAccess code will be sent in a separate communication.\n\nThanks,\nProduct Development Team"
+      },
+      {
+        "id": 12,
+        "sender": "events@conference.org",
+        "subject": "Confirmed: Speaker Slot at Annual Tech Conference",
+        "preview": "Congratulations on being selected as a keynote speaker...",
+        "time": "1:45 PM",
+        "starred": true,
+        "selected": false,
+        "category": "professional",
+        "content": "Dear Speaker,\n\nWe are delighted to confirm your keynote speaking slot at the International Technology Innovations Conference.\n\nDetails:\n- Date: March 15-17, 2024\n- Location: San Francisco Convention Center\n- Speaking Slot: Day 2, 10:00 AM\n- Topic: Emerging AI Technologies\n\nPresentation materials must be submitted by February 28th.\n\nBest regards,\nConference Organizing Committee"
+      },
+      {
+        "id": 13,
+        "sender": "newsletter@travelagency.com",
+        "subject": "Exclusive Winter Travel Deals - Limited Time Offer",
+        "preview": "Incredible discounts on winter vacation packages...",
+        "time": "8:30 AM",
+        "starred": false,
+        "selected": false,
+        "category": "marketing",
+        "content": "Dear Travel Enthusiast,\n\nEscape the winter chill with our limited-time travel deals!\n\nSpecial Offers:\n- Caribbean Cruise: 40% off\n- Ski Resort Packages: Buy 4 nights, get 2 free\n- European City Tours: Reduced group rates\n\nBook now - offer expires December 20th!\n\nWander Wisely,\nTravel Deals Team"
+      },
+      {
+        "id": 14,
+        "sender": "fundraising@nonprofit.org",
+        "subject": "Annual Charity Gala - Sponsorship Opportunities",
+        "preview": "Invitation to support our annual fundraising event...",
+        "time": "2:10 PM",
+        "starred": false,
+        "selected": false,
+        "category": "nonprofit",
+        "content": "Dear Potential Sponsor,\n\nJoin us in making a difference at our Annual Charity Gala. Your support directly impacts community programs.\n\nSponsorship Levels:\n- Gold: $10,000 (Premier recognition)\n- Silver: $5,000 (Prominent visibility)\n- Bronze: $2,500 (Community supporter)\n\nEvent Date: January 15th, 2024\nVenue: Grand Metropolitan Hotel\n\nWith gratitude,\nFundraising Team"
+      },
+      {
+        "id": 15,
+        "sender": "webinar@professionaltraining.com",
+        "subject": "Exclusive Webinar: Advanced Project Management Techniques",
+        "preview": "Online training session with industry-leading experts...",
+        "time": "9:55 AM",
+        "starred": true,
+        "selected": false,
+        "category": "professional development",
+        "content": "Dear Professional,\n\nUpgrade your project management skills with our exclusive online masterclass.\n\nWebinar Highlights:\n- Led by Fortune 500 Project Directors\n- Interactive Q&A Sessions\n- Industry-Specific Case Studies\n- Certificate of Completion\n\nDate: December 20th\nTime: 2:00 PM EST\n\nReserve your spot now!\n\nBest regards,\nProfessional Development Team"
+      },
+      {
+        "id": 16,
+        "sender": "tom.wilson@freelancedesign.com",
+        "subject": "Design Collaboration Proposal",
+        "preview": "Exciting opportunity for a potential creative partnership...",
+        "time": "11:40 AM",
+        "starred": false,
+        "selected": false,
+        "category": "work proposal",
+        "content": "Hi there,\n\nI came across your portfolio and was impressed by your creative approach. I'd like to discuss a potential collaboration on an upcoming branding project.\n\nProposal Highlights:\n- 3-month design project\n- Innovative branding strategy\n- Competitive compensation\n\nWould you be interested in a quick call to discuss further?\n\nCheers,\nTom Wilson\nFreelance Design Consultant"
+      },
+      {
+        "id": 17,
+        "sender": "alumni@university.edu",
+        "subject": "Reunion and Homecoming - Save the Date",
+        "preview": "Join us for our annual alumni gathering and celebrate memories...",
+        "time": "10:15 AM",
+        "starred": false,
+        "selected": false,
+        "category": "personal",
+        "content": "Dear Alumni,\n\nMark your calendars for our upcoming Alumni Reunion and Homecoming event!\n\nEvent Details:\n- Date: June 15-16, 2024\n- Location: University Campus\n- Activities: Campus Tours, Networking, Gala Dinner\n\nEarly bird registration now open.\n\nWarm regards,\nAlumni Relations Office"
+      },
+      {
+        "id": 18,
+        "sender": "health.insurance@provider.com",
+        "subject": "Annual Health Plan Review and Options",
+        "preview": "Your health insurance plan details and renewal information...",
+        "time": "8:20 AM",
+        "starred": false,
+        "selected": false,
+        "category": "insurance",
+        "content": "Dear Policyholder,\n\nIt's time for your annual health insurance plan review. Key updates:\n\n- Expanded Network Coverage\n- New Wellness Program Benefits\n- Premium Adjustments\n\nOpen enrollment period: December 1-31\n\nPlease review attached documentation and select your preferred plan.\n\nBest,\nHealth Insurance Team"
+      },
+      {
+        "id": 19,
+        "sender": "recommendations@bookstore.com",
+        "subject": "Personalized Book Recommendations",
+        "preview": "Curated book suggestions based on your reading history...",
+        "time": "3:50 PM",
+        "starred": true,
+        "selected": false,
+        "category": "personal interest",
+        "content": "Hello Book Lover,\n\nBased on your recent purchases, we've curated some exciting book recommendations:\n\n1. 'The Quantum Future' - Sci-fi thriller\n2. 'Silent Landscapes' - Award-winning historical novel\n3. 'Digital Transformation' - Business innovation\n\n20% off your next purchase with code: READER2024\n\nHappy Reading!\nYour Bookstore Team"
+      }
+    ]
+} 
