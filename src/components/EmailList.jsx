@@ -5,8 +5,11 @@ import EmailSidebar from './EmailSidebar';
 import FilterMenu from './FilterMenu';
 import ProfileMenu from './ProfileMenu';
 import EmailCompose from './EmailCompose';
+import useStore from '../useStore'; // Import Zustand store
 
 const EmailList = ({ view }) => {
+  const { accessToken } = useStore((state) => state); // Get accessToken from Zustand store
+
   const navigate = useNavigate();
   const [emails, setEmails] = useState([]);
   const [folders, setFolders] = useState([]);
@@ -19,7 +22,13 @@ const EmailList = ({ view }) => {
   useEffect(() => {
     const fetchEmails = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/emails');
+        const response = await fetch('http://localhost:5000/api/emails', {
+          method: 'POST', // Assuming your backend expects a POST request
+          headers: {
+            'Content-Type': 'application/json', // Set content type to JSON
+          },
+          body: JSON.stringify({ accessToken }), // Send accessToken in the request body
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch emails');
         }
@@ -28,7 +37,10 @@ const EmailList = ({ view }) => {
         // Map the response to the expected format
         const formattedEmails = data.emails.map(email => ({
           id: email.id,
-          sender: email.sender.emailAddress.name || email.sender.emailAddress.address,
+          sender: {
+            name: email.sender.emailAddress.name || 'Unknown Sender',
+            address: email.sender.emailAddress.address || 'No Address Available',
+          },
           subject: email.subject,
           preview: email.bodyPreview,
           time: new Date(email.sentDateTime).toLocaleString(), // Format the date as needed
@@ -43,13 +55,22 @@ const EmailList = ({ view }) => {
       }
     };
 
-    fetchEmails();
-  }, []);
+    if (accessToken) { // Ensure accessToken is available before fetching emails
+      fetchEmails();
+    }
+  }, [accessToken]); // Dependency on accessToken
 
+  // Fetch folders from the backend
   useEffect(() => {
     const fetchFolders = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/folders');
+        const response = await fetch('http://localhost:5000/api/folders', {
+          method: 'POST', // Assuming your backend expects a POST request
+          headers: {
+            'Content-Type': 'application/json', // Set content type to JSON
+          },
+          body: JSON.stringify({ accessToken }), // Send accessToken in the request body
+        });
         if (!response.ok) {
           throw new Error(`Failed to fetch folders: ${response.status} ${response.statusText}`);
         }
@@ -81,8 +102,10 @@ const EmailList = ({ view }) => {
       }
     };
 
-    fetchFolders();
-  }, []);
+    if (accessToken) { // Ensure accessToken is available before fetching folders
+      fetchFolders();
+    }
+  }, [accessToken]); // Dependency on accessToken
 
   const toggleSelectAll = () => {
     const newSelectAll = !selectAll;
@@ -172,34 +195,12 @@ const EmailList = ({ view }) => {
               className={`flex items-center p-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer ${email.selected ? 'bg-gray-100' : ''}`}
               onClick={(e) => handleItemClick(e, email)}
             >
-              <div className="flex items-center mr-4">
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleEmailSelection(email.id);
-                  }}
-                  className={`w-5 h-5 border-2 border-black flex items-center justify-center ${email.selected ? 'bg-black' : 'bg-white'}`}
-                >
-                  {email.selected && <Check className="w-4 h-4 text-white" />}
-                </button>
-              </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleStarred(email.id);
-                }}
-                className="mr-4"
-              >
-                <Star 
-                  className={`w-5 h-5 ${email.starred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-                />
-              </button>
               <div className="flex-1">
                 <div className="flex justify-between">
-                  <h3 className="font-semibold">{email.sender}</h3>
+                  <h3 className="font-semibold">{email.sender.name} ({email.sender.address})</h3>
                   <span className="text-sm text-gray-500">{email.time}</span>
                 </div>
-                <p className="text-gray-600 text-sm">{email.subject}</p>
+                <p className="text-gray-700 text-base">{email.subject}</p>
                 <p className="text-gray-500 text-xs">{email.preview}</p>
               </div>
             </div>

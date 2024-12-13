@@ -9,24 +9,8 @@ const Login = () => {
   const { instance, inProgress } = useMsal();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if access token exists
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      navigate('/');
-    }
-  }, [navigate]);
-
   const handleLogin = () => {
-    // Prevent multiple login attempts
-    if (inProgress === InteractionStatus.Login) {
-      return;
-    }
-
-    instance.loginRedirect({
-      ...loginRequest,
-      redirectStartPage: "http://localhost:3001"
-    });
+    
   };
 
   return (

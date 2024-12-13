@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { Draggable } from 'gsap/all';
+import axios from 'axios';
+import useStore from '../useStore';
+
 // Register the Draggable plugin
 gsap.registerPlugin(Draggable);
 
@@ -45,10 +48,24 @@ const EmailCompose = ({ onClose }) => {
     };
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement email sending logic
-    onClose();
+    const accessToken = useStore.getState().accessToken;
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/sendEmail', {
+        accessToken,
+        subject: emailData.subject,
+        body: emailData.body,
+        recipients: [emailData.to]
+      });
+
+      console.log(response.data.message);
+      clearFields();
+      onClose();
+    } catch (error) {
+      console.error("Error sending email:", error.response ? error.response.data : error.message);
+    }
   };
 
   const handleChange = (e) => {

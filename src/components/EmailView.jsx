@@ -9,14 +9,19 @@ import {
   Trash2,
   Sparkles
 } from 'lucide-react';
+import useStore from '../useStore';
+import EmailCompose from './EmailCompose'; // Import EmailCompose
 
 const EmailView = () => {
-  const { emailId } = useParams();
+  const { accessToken } = useStore((state) => state); // Get accessToken from Zustand store
+  const { id } = useParams(); // Use 'id' to get the email ID from the URL
   const navigate = useNavigate();
   const location = useLocation();
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [summary, setSummary] = useState('');
   const [isStarred, setIsStarred] = useState(false);
+  const [isComposeOpen, setIsComposeOpen] = useState(false); // State to control compose modal
+  const [composeTo, setComposeTo] = useState(''); // State for the "To" field in compose modal
   
   // Get email from location state
   const email = location.state?.email;
@@ -24,13 +29,13 @@ const EmailView = () => {
   useEffect(() => {
     if (!email) {
       // If email data is not available, redirect back to inbox
-      navigate('/');
+      navigate('/emails');
     }
     setIsStarred(email?.starred || false);
   }, [email, navigate]);
 
   const handleBack = () => {
-    navigate('/');
+    navigate('/emails'); // Navigate back to the email list
   };
 
   const handleSummarize = async () => {
@@ -69,6 +74,11 @@ const EmailView = () => {
     }
   };
 
+  const handleReply = () => {
+    setComposeTo(email.sender.address); // Set the "To" field with the sender's email address
+    setIsComposeOpen(true); // Open the compose modal
+  };
+
   if (!email) return null;
 
   return (
@@ -76,28 +86,19 @@ const EmailView = () => {
       {/* Email view header */}
       <div className="border-b p-3 sm:p-4">
         <div className="flex items-center justify-between">
+          <button onClick={handleBack} className="flex items-center space-x-2 text-blue-600">
+            <ArrowLeft className="h-5 w-5" />
+            <span>Back</span>
+          </button>
+          <h1 className="text-xl font-semibold">{email.subject}</h1>
           <div className="flex items-center space-x-2">
-            <button onClick={handleBack} className="md:hidden">
-              <ArrowLeft className="h-6 w-6" />
-            </button>
-            <h1 className="text-xl font-semibold">{email.subject}</h1>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button onClick={() => navigate('/')}>
-              <Reply className="h-5 w-5" />
-            </button>
-            <button onClick={() => navigate('/email/forward')}>
-              <Forward className="h-5 w-5" />
-            </button>
+            <button onClick={handleReply}><Reply className="h-5 w-5" /></button>
+            <button onClick={() => navigate('/email/forward')}><Forward className="h-5 w-5" /></button>
             <button onClick={() => setIsStarred(!isStarred)}>
               <Star className={`h-5 w-5 ${isStarred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
             </button>
-            <button>
-              <Archive className="h-5 w-5" />
-            </button>
-            <button>
-              <Trash2 className="h-5 w-5" />
-            </button>
+            <button><Archive className="h-5 w-5" /></button>
+            <button><Trash2 className="h-5 w-5" /></button>
           </div>
         </div>
       </div>
@@ -109,11 +110,8 @@ const EmailView = () => {
             {/* Sender info */}
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-semibold">{email.sender?.emailAddress?.name || 'Unknown Sender'}</h2>
-                <p className="text-sm text-gray-500">To: {email.toRecipients?.map(recipient => recipient.emailAddress.name).join(', ') || 'No Recipients'}</p>
-              </div>
-              <div className="text-sm text-gray-500">
-                {new Date(email.sentDateTime).toLocaleString()} {/* Format the date as needed */}
+                <h2 className="font-semibold">From: {email.sender.name || 'Unknown Sender'} ({email.sender.address || 'No Address Available'})</h2>
+                <p className="text-sm text-gray-500">Time: {email.time || 'No Time Available'}</p>
               </div>
             </div>
 
@@ -153,6 +151,9 @@ const EmailView = () => {
           </div>
         </div>
       </div>
+
+      {/* Render EmailCompose Modal */}
+      {isComposeOpen && <EmailCompose onClose={() => setIsComposeOpen(false)} to={composeTo} />} {/* Pass the "To" field */}
     </div>
   );
 };
