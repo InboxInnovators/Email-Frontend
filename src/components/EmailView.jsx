@@ -11,9 +11,10 @@ import {
 } from 'lucide-react';
 import useStore from '../useStore';
 import EmailCompose from './EmailCompose'; // Import EmailCompose
+import TranslateModal from './TranslateModal'; // Import the TranslateModal
 
 const EmailView = () => {
-  const { accessToken } = useStore((state) => state); // Get accessToken from Zustand store
+  const { setEmail } = useStore((state) => state); // Get setEmail from Zustand store
   const { id } = useParams(); // Use 'id' to get the email ID from the URL
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,17 +23,21 @@ const EmailView = () => {
   const [isStarred, setIsStarred] = useState(false);
   const [isComposeOpen, setIsComposeOpen] = useState(false); // State to control compose modal
   const [composeTo, setComposeTo] = useState(''); // State for the "To" field in compose modal
+  const [isTranslateOpen, setIsTranslateOpen] = useState(false); // State to control translate modal
   
   // Get email from location state
   const email = location.state?.email;
+  console.log('Email from location state:', email); // Log the email from location state
 
   useEffect(() => {
     if (!email) {
-      // If email data is not available, redirect back to inbox
       navigate('/emails');
+    } else {
+      console.log('Setting email in store:', email); // Log the email object
+      setEmail(email);
+      setIsStarred(email?.starred || false);
     }
-    setIsStarred(email?.starred || false);
-  }, [email, navigate]);
+  }, [email, navigate, setEmail]);
 
   const handleBack = () => {
     navigate('/emails'); // Navigate back to the email list
@@ -79,6 +84,12 @@ const EmailView = () => {
     setIsComposeOpen(true); // Open the compose modal
   };
 
+  const handleTranslate = () => {
+    const emailFromStore = useStore.getState().email; // Get email from Zustand store
+    console.log('Translating content:', emailFromStore.body?.content); // Log the content to be translated
+    setIsTranslateOpen(true); // Open the translate modal
+  };
+
   if (!email) return null;
 
   return (
@@ -97,6 +108,7 @@ const EmailView = () => {
             <button onClick={() => setIsStarred(!isStarred)}>
               <Star className={`h-5 w-5 ${isStarred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
             </button>
+            <button onClick={handleTranslate}><Sparkles className="h-5 w-5" /></button>
             <button><Archive className="h-5 w-5" /></button>
             <button><Trash2 className="h-5 w-5" /></button>
           </div>
@@ -153,7 +165,9 @@ const EmailView = () => {
       </div>
 
       {/* Render EmailCompose Modal */}
-      {isComposeOpen && <EmailCompose onClose={() => setIsComposeOpen(false)} to={composeTo} />} {/* Pass the "To" field */}
+      {isComposeOpen && <EmailCompose onClose={() => setIsComposeOpen(false)} to={composeTo} />}
+      {/* Render TranslateModal */}
+      {isTranslateOpen && <TranslateModal onClose={() => setIsTranslateOpen(false)} text={email.body?.content} />}
     </div>
   );
 };
