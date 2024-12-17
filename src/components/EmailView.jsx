@@ -104,7 +104,7 @@ const EmailView = () => {
           <h1 className="text-xl font-semibold">{email.subject}</h1>
           <div className="flex items-center space-x-2">
             <button onClick={handleReply}><Reply className="h-5 w-5" /></button>
-            <button onClick={() => navigate('/email/forward')}><Forward className="h-5 w-5" /></button>
+            <button onClick={handleReply}><Forward className="h-5 w-5" /></button>
             <button onClick={() => setIsStarred(!isStarred)}>
               <Star className={`h-5 w-5 ${isStarred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
             </button>

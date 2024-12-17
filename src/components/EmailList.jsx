@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Star, Check, Inbox, Send, Archive ,PencilOff,Trash2, History, FolderX, Notebook, FileBox} from 'lucide-react';
+import { Star, Check, Inbox, Send, Archive ,PencilOff,Trash2, History, FolderX, Notebook, FileBox, Sparkles} from 'lucide-react';
 import EmailSidebar from './EmailSidebar';
 import FilterMenu from './FilterMenu';
 import ProfileMenu from './ProfileMenu';
 import EmailCompose from './EmailCompose';
+import SummaryModal from './SummaryModal'; // Import the SummaryModal
 import useStore from '../useStore'; // Import Zustand store
 
 const EmailList = ({ view }) => {
@@ -17,15 +18,58 @@ const EmailList = ({ view }) => {
   const [activeView, setActiveView] = useState('inbox');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false); // State for summary modal
+  const [currentSummary, setCurrentSummary] = useState(''); // State for current summary
+
+  // Fetch emails based on the selected folder
+  const fetchEmailsByFolder = async (folderId) => {
+    console.log('Folder ID: ', folderId); // Log the folder ID
+    try {
+      const response = await fetch(`https://graph.microsoft.com/v1.0/me/mailFolders/${folderId}/messages`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch emails from the selected folder');
+      }
+
+      const data = await response.json();
+      const formattedEmails = data.value.map(email => ({
+        id: email.id,
+        sender: {
+          name: email.sender.emailAddress.name || 'Unknown Sender',
+          address: email.sender.emailAddress.address || 'No Address Available',
+        },
+        subject: email.subject,
+        preview: email.bodyPreview,
+        time: new Date(email.sentDateTime).toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        }), // Format the date as DD MMM YEAR
+        starred: false, // Default value for starred
+        selected: false, // Default value for selected
+      }));
+
+      setEmails(formattedEmails);
+      console.log('Fetched emails from folder:', formattedEmails);
+    } catch (error) {
+      console.error('Error fetching emails by folder:', error);
+    }
+  };
 
   // Fetch emails from the backend
   useEffect(() => {
     const fetchEmails = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/emails', {
-          method: 'POST', // Assuming your backend expects a POST request
+          method: 'POST', 
           headers: {
-            'Content-Type': 'application/json', // Set content type to JSON
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({ accessToken }), // Send accessToken in the request body
         });
@@ -43,7 +87,11 @@ const EmailList = ({ view }) => {
           },
           subject: email.subject,
           preview: email.bodyPreview,
-          time: new Date(email.sentDateTime).toLocaleString(), // Format the date as needed
+          time: new Date(email.sentDateTime).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          }), // Format the date as DD MMM YEAR
           starred: false, // Default value for starred
           selected: false, // Default value for selected
         }));
@@ -58,18 +106,18 @@ const EmailList = ({ view }) => {
     if (accessToken) { // Ensure accessToken is available before fetching emails
       fetchEmails();
     }
-  }, [accessToken]); // Dependency on accessToken
+  }, [accessToken]); 
 
   // Fetch folders from the backend
   useEffect(() => {
     const fetchFolders = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/folders', {
-          method: 'POST', // Assuming your backend expects a POST request
+          method: 'POST', 
           headers: {
-            'Content-Type': 'application/json', // Set content type to JSON
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ accessToken }), // Send accessToken in the request body
+          body: JSON.stringify({ accessToken }), 
         });
         if (!response.ok) {
           throw new Error(`Failed to fetch folders: ${response.status} ${response.statusText}`);
@@ -92,6 +140,7 @@ const EmailList = ({ view }) => {
 
         const formattedFolders = data.value.map(folder => ({
           displayName: folder.displayName,
+          id: folder.id,
           icon: folderIcons[folder.displayName] || null, // Assign icon based on folder name
           color: '#0F4F97', // Default color or customize as needed
         }));
@@ -106,6 +155,12 @@ const EmailList = ({ view }) => {
       fetchFolders();
     }
   }, [accessToken]); // Dependency on accessToken
+
+  // Handle folder selection
+  const handleFolderSelect = (folderId) => {
+    setActiveView(folderId); // Set the active view to the selected folder
+    fetchEmailsByFolder(folderId); // Fetch emails for the selected folder using FolderId
+  };
 
   const toggleSelectAll = () => {
     const newSelectAll = !selectAll;
@@ -124,6 +179,32 @@ const EmailList = ({ view }) => {
     setEmails(emails.map(email => 
       email.id === id ? { ...email, starred: !email.starred } : email
     ));
+  };
+
+  const handleSummary = async (email) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/summarize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subject: email.subject,
+          sender: email.sender,
+          body: email.preview, // Ensure this is defined and valid
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to summarize email');
+      }
+
+      const data = await response.json();
+      setCurrentSummary(data.summary); // Assuming the response contains a 'summary' field
+      setIsSummaryOpen(true); // Open the summary modal
+    } catch (error) {
+      console.error('Error summarizing email:', error);
+    }
   };
 
   const handleItemClick = (e, email) => {
@@ -146,9 +227,10 @@ const EmailList = ({ view }) => {
       } fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out`}>
         <EmailSidebar 
           activeView={activeView}
-          setActiveView={setActiveView}
+          setActiveView={handleFolderSelect}
           onComposeClick={toggleComposeModal}
           folders={folders}
+          onFolderSelect={handleFolderSelect}
         />
       </div>
 
@@ -196,13 +278,23 @@ const EmailList = ({ view }) => {
               onClick={(e) => handleItemClick(e, email)}
             >
               <div className="flex-1">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <h3 className="font-semibold">{email.sender.name} ({email.sender.address})</h3>
                   <span className="text-sm text-gray-500">{email.time}</span>
                 </div>
                 <p className="text-gray-700 text-base">{email.subject}</p>
-                <p className="text-gray-500 text-xs">{email.preview}</p>
+                <p className="text-gray-500 text-xs">{email.preview.slice(0, 50) + (email.preview.length > 50 ? '...' : '')}</p>
               </div>
+              <button 
+                onClick={(e) => { 
+                  e.stopPropagation(); // Prevent triggering the email click
+                  handleSummary(email); // Call the summary function
+                }} 
+                className="ml-4 flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+              >
+                <Sparkles className="h-4 w-4" />
+                <span>Summarize</span>
+              </button>
             </div>
           ))}
         </div>
@@ -210,6 +302,8 @@ const EmailList = ({ view }) => {
 
       {/* Render EmailCompose Modal */}
       {isComposeOpen && <EmailCompose onClose={toggleComposeModal} />}
+      {/* Render SummaryModal */}
+      {isSummaryOpen && <SummaryModal summary={currentSummary} onClose={() => setIsSummaryOpen(false)} />}
     </div>
   );
 };

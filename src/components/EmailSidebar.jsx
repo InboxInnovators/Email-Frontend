@@ -11,7 +11,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../EI-Logo.png';
 
-const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders }) => {
+const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFolderSelect }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
@@ -78,9 +78,12 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders }) =>
           {folders.map((folder) => (
             <motion.button
               key={folder.displayName}
-              onClick={() => setActiveView(folder.displayName)}
+              onClick={() => {
+                setActiveView(folder.id);
+                onFolderSelect(folder.id);
+              }}
               className={`flex items-center w-full p-2 rounded-lg transition-colors mb-2 ${
-                activeView === folder.displayName ? 'bg-black text-white' : 'hover:bg-gray-100'
+                activeView === folder.id ? 'bg-black text-white' : 'hover:bg-gray-100'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -88,7 +91,7 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders }) =>
               {folder.icon && (
                 <folder.icon 
                   className="w-5 h-5" 
-                  style={{ color: activeView === folder.displayName ? 'white' : folder.color }}
+                  style={{ color: activeView === folder.id ? 'white' : folder.color }}
                 />
               )}
               <AnimatePresence>
