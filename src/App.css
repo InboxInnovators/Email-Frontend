@@ -49,3 +49,32 @@ button {
 button:hover {
   background-color: #0F4F97;
 }
+
+/* Sidebar styles */
+.sidebar {
+  width: 256px; /* Fixed width for larger screens */
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 192px; /* Adjust width for small screens */
+  }
+
+  .sidebar img {
+    width: 50px; /* Reduce logo size */
+    height: 50px; /* Reduce logo size */
+  }
+}
+
+/* Hide text on mobile */
+@media (max-width: 768px) {
+  .sidebar span {
+    display: none; /* Hide text */
+  }
+}
+
+@media (max-width: 768px) {
+  .compose-button {
+    padding: 8px 12px; /* Adjust padding for smaller screens */
+  }
+}

@@ -19,7 +19,7 @@ const ProfileMenu = ({ userName, userEmail, onSignOut }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border">
+        <div className="absolute right-0 mt-2 w-48 bg-blue-100 rounded-lg shadow-lg py-1 z-50 border">
           <div className="px-4 py-3 border-b">
             <span className="block text-sm font-medium text-gray-900">{userName}</span>
             <span className="block text-sm text-gray-500">{userEmail}</span>
