@@ -15,6 +15,8 @@ import useStore from '../useStore';
 import EmailCompose from './EmailCompose'; // Import EmailCompose
 import TranslateModal from './TranslateModal'; // Import the TranslateModal
 import { PDFDocument } from 'pdf-lib'; // Import PDFDocument from pdf-lib
+import SalesforceDetailsModal from './SalesforceDetailsModal'; // Import the new modal component
+import { toast } from 'sonner';
 
 const EmailView = () => {
   const { setEmail } = useStore((state) => state); // Get setEmail from Zustand store
@@ -30,6 +32,7 @@ const EmailView = () => {
   const [salesforceDetails, setSalesforceDetails] = useState(null); // State for Salesforce details
   const [attachments, setAttachments] = useState([]); // State for attachments
   const [pdfData, setPdfData] = useState(null); // State for PDF data
+  const [isSalesforceModalOpen, setIsSalesforceModalOpen] = useState(false); // State for modal visibility
 
   // Get email from location state
   const email = location.state?.email;
@@ -113,6 +116,7 @@ const EmailView = () => {
         }
     } catch (error) {
         console.error('Error summarizing email:', error);
+        toast.error('Error summarizing email');
     } finally {
         setIsSummarizing(false);
     }
@@ -146,9 +150,15 @@ const EmailView = () => {
       const data = await response.json();
       setSalesforceDetails(data.details); // Set the fetched details in state
       console.log('Salesforce details:', data.details); // Log the details
+      setIsSalesforceModalOpen(true); // Open the modal
     } catch (error) {
       console.error('Error fetching Salesforce details:', error);
+      toast.error('Error fetching Salesforce details');
     }
+  };
+
+  const closeModal = () => {
+    setIsSalesforceModalOpen(false); // Close the modal
   };
 
   const handleDeleteEmail = async () => {
@@ -173,6 +183,7 @@ const EmailView = () => {
       navigate('/emails'); // Navigate back to the email list after deletion
     } catch (error) {
       console.error('Error deleting email:', error);
+      toast.error('Error deleting the email.');
     }
   };
 
@@ -220,7 +231,7 @@ const EmailView = () => {
               onClick={handleGetSalesforceInfo} 
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200"
             >
-              Get Salesforce Info
+              Get Info
             </button>
           </div>
         </div>
@@ -305,6 +316,10 @@ const EmailView = () => {
       {isComposeOpen && <EmailCompose onClose={() => setIsComposeOpen(false)} to={composeTo} />}
       {/* Render TranslateModal */}
       {isTranslateOpen && <TranslateModal onClose={() => setIsTranslateOpen(false)} text={email.body} />}
+      {/* Render SalesforceDetailsModal if open */}
+      {isSalesforceModalOpen && (
+        <SalesforceDetailsModal details={salesforceDetails} onClose={closeModal} />
+      )}
     </div>
   );
 };

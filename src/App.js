@@ -117,7 +117,7 @@ const WrappedView = () => {
           )}
         </div>
       </div>
-      <Toaster position="top-center" />
+      <Toaster position="top-center" richColors/>
     </div>
   );
 };
@@ -136,7 +136,7 @@ const App = ({ instance }) => {
           <Route path="/rules" element={<AutomationRulesPage/>}/>
         </Routes>
       </Router>
-      <Toaster position="top-center" />
+      <Toaster position="top-center" richColors/>
     </MsalProvider>
   );
 };

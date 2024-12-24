@@ -68,6 +68,7 @@ const EmailCompose = ({ onClose, to, content }) => {
       onClose();
     } catch (error) {
       console.error("Error sending email:", error.response ? error.response.data : error.message);
+      toast.error("Error Sending Email");
     }
   };
 

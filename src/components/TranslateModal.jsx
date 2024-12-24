@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import useStore from '../useStore'; // Import the store
+import { toast } from 'sonner';
 
 const TranslateModal = ({ onClose }) => {
   const { email } = useStore((state) => state); // Get email from Zustand store
@@ -48,6 +49,7 @@ const TranslateModal = ({ onClose }) => {
       setTranslation(translatedText); // Set the translation state
     } catch (error) {
       console.error('Translation error:', error);
+      toast.error('Error Translating !');
     } finally {
       setIsTranslating(false);
     }

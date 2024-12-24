@@ -4,6 +4,7 @@ import Icon from '../EI-Logo.png';
 import axios from 'axios'; // Import axios for API calls
 import useStore from '../useStore'; // Import useStore from the correct path
 import FolderModal from './FolderModal'; // Import the new FolderModal component
+import { toast } from 'sonner';
 
 const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFolderSelect }) => {
   const [folderName, setFolderName] = useState(''); // State for new folder name
@@ -44,7 +45,7 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFo
       fetchFolders(); // Refresh the folder list
     } catch (error) {
       console.error('Error creating folder:', error);
-      alert('Error creating folder');
+      toast.error('Error creating the folder');
     }
   };
 
@@ -60,7 +61,7 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFo
       fetchFolders(); // Refresh the folder list
     } catch (error) {
       console.error('Error renaming folder:', error);
-      alert('Error renaming folder');
+      toast.error('Error renaming the folder');
     }
   };
 
@@ -77,7 +78,7 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFo
       fetchFolders(); // Refresh the folder list
     } catch (error) {
       console.error('Error deleting folder:', error);
-      alert('Error deleting folder');
+      toast.error('Error deleting the folder');
     }
   };
 

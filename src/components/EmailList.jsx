@@ -9,6 +9,7 @@ import useStore from '../useStore'; // Import Zustand store
 import EmailTable from './EmailTable'; // Import the new EmailTable component
 import { Inbox, Send, Archive, PencilOff, Trash2, History, FolderX, Notebook, FileBox } from 'lucide-react'; // Import all necessary icons
 import { summarizeEmail } from "../utils/summarizeEmail"; // Import summarizeEmail if defined elsewhere
+import { toast } from 'sonner';
 
 const EmailList = ({ view }) => {
   const { accessToken } = useStore((state) => state); // Get accessToken from Zustand store
@@ -191,6 +192,8 @@ const EmailList = ({ view }) => {
       setIsSummaryOpen(true); // Open the summary modal
     } catch (error) {
       console.error('Error summarizing email:', error);
+      toast.error('Error summarizing the email.');
+
     }
   };
 
