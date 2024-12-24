@@ -101,7 +101,7 @@ const EmailCompose = ({ onClose, to, content }) => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let done = false;
-
+      setBody('');
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
