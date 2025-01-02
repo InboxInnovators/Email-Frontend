@@ -23,6 +23,11 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFo
         },
       });
       setOutlookFolders(response.data.value); // Set the fetched folders
+      const inboxFolder = response.data.value.find(folder => folder.displayName === 'Inbox');
+      if (inboxFolder) {
+        setSelectedFolderId(inboxFolder.id); // Set Inbox as the default active folder
+        setActiveView(inboxFolder.id); // Set the active view to Inbox
+      }
       console.log('Folder Details:', response.data.value);
     } catch (error) {
       console.error('Error fetching folders:', error);
@@ -136,17 +141,32 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFo
         {/* Folders Section */}
         <div className="flex-grow space-y-1">
           <h3 className="font-medium mb-2">Folders</h3>
-          {outlookFolders.map((folder) => (
+          {/* Render Inbox folder first */}
+          {outlookFolders.filter(folder => folder.displayName === 'Inbox').map((folder) => (
             <button
               key={folder.id}
               onClick={() => {
                 setActiveView(folder.id);
                 onFolderSelect(folder.id);
                 setSelectedFolderId(folder.id); // Set the selected folder ID
-                setFolderName(folder.displayName); // Set the folder name for deletion
               }}
               className={`flex items-center justify-start w-full p-2 rounded-lg transition-colors text-lg
-                ${activeView === folder.id ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                ${selectedFolderId === folder.id ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+            >
+              <span className="ml-3">{folder.displayName}</span>
+            </button>
+          ))}
+          {/* Render other folders */}
+          {outlookFolders.filter(folder => folder.displayName !== 'Inbox').map((folder) => (
+            <button
+              key={folder.id}
+              onClick={() => {
+                setActiveView(folder.id);
+                onFolderSelect(folder.id);
+                setSelectedFolderId(folder.id); // Set the selected folder ID
+              }}
+              className={`flex items-center justify-start w-full p-2 rounded-lg transition-colors text-lg
+                ${selectedFolderId === folder.id ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'}`}
             >
               <span className="ml-3">{folder.displayName}</span>
             </button>

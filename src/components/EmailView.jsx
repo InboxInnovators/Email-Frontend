@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -9,7 +9,16 @@ import {
   Trash2,
   Sparkles,
   Languages,
-  Cloudy
+  Cloudy,
+  ChevronDown,
+  AlertCircle,
+  ThumbsUp,
+  BookOpen,
+  Zap,
+  RefreshCcw,
+  User,
+  AlarmClockCheck,
+  AlarmClockCheckIcon
 } from 'lucide-react';
 import useStore from '../useStore';
 import EmailCompose from './EmailCompose'; // Import EmailCompose
@@ -17,6 +26,7 @@ import TranslateModal from './TranslateModal'; // Import the TranslateModal
 import { PDFDocument } from 'pdf-lib'; // Import PDFDocument from pdf-lib
 import SalesforceDetailsModal from './SalesforceDetailsModal'; // Import the new modal component
 import { toast } from 'sonner';
+import Tooltip from './Tooltip'; // Import the Tooltip component
 
 const EmailView = () => {
   const { setEmail } = useStore((state) => state); // Get setEmail from Zustand store
@@ -33,6 +43,10 @@ const EmailView = () => {
   const [attachments, setAttachments] = useState([]); // State for attachments
   const [pdfData, setPdfData] = useState(null); // State for PDF data
   const [isSalesforceModalOpen, setIsSalesforceModalOpen] = useState(false); // State for modal visibility
+  const { accessToken } = useStore((state) => state);
+  const [sentiment, setSentiment] = useState(null); // State to hold sentiment analysis result
+  const [isOpen, setIsOpen] = useState(false); // State for dropdown
+  const dropdownRef = useRef(null);
 
   // Get email from location state
   const email = location.state?.email;
@@ -46,8 +60,34 @@ const EmailView = () => {
       setEmail(email);
       setIsStarred(email?.starred || false);
       fetchAttachments(email.id); // Fetch attachments using the email ID
+      fetchSentimentAnalysis(email.body); // Call sentiment analysis when email is set
     }
   }, [email, navigate, setEmail]);
+
+  // Function to call sentiment analysis API
+  const fetchSentimentAnalysis = async (emailContent) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/sentiment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ emailContent })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze sentiment');
+      }
+
+      const data = await response.json();
+      const content = data.kwargs.content; // Access the content property
+      setSentiment(content); // Store the sentiment analysis result
+      console.log('Sentiment analysis result:', content);
+    } catch (error) {
+      console.error('Error analyzing sentiment:', error);
+      toast.error('Failed to analyze sentiment');
+    }
+  };
 
   const fetchAttachments = async (emailId) => {
     try {
@@ -206,33 +246,171 @@ const EmailView = () => {
     }
   };
 
+  const formatSalesforceDetails = (details) => {
+    return details.split('\n').map((line, index) => (
+      <p key={index} className="whitespace-pre-wrap">{line}</p>
+    ));
+  };
+
+  const defaultData = {
+    Priority: 'Low',
+    Urgency: 'Low',
+    Sentiment: 'Neutral',
+    Category: 'Security Notification',
+    Impact: 'Low',
+    'Recurrence/Escalation': 'No',
+    'Sender Profile': 'Other'
+  };
+
+  const analysisData = sentiment || defaultData;
+
+  const getBadgeClasses = (value) => {
+    const normalizedValue = value.toLowerCase();
+    
+    switch (normalizedValue) {
+      case 'low':
+        return 'bg-blue-100 text-blue-800';
+      case 'medium':
+      case 'maybe':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'high':
+      case 'yes':
+      case 'urgent':
+        return 'bg-red-100 text-red-800';
+      case 'positive':
+        return 'bg-green-100 text-green-800';
+      case 'neutral':
+        return 'bg-gray-100 text-gray-800';
+      case 'negative':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-indigo-100 text-indigo-800';
+    }
+  };
+
+  const getIcon = (key) => {
+    switch (key) {
+      case 'Urgency':
+        return <AlertCircle className="w-4 h-4" />;
+      case 'Sentiment':
+        return <ThumbsUp className="w-4 h-4" />;
+      case 'Category':
+        return <BookOpen className="w-4 h-4" />;
+      case 'Impact':
+        return <Zap className="w-4 h-4" />;
+      case 'Recurrence/Escalation':
+        return <RefreshCcw className="w-4 h-4" />;
+      case 'Sender Profile':
+        return <User className="w-4 h-4" />;
+      case 'Priority Level':
+        return <AlarmClockCheckIcon className="w-4 h-4" />;
+      default:
+        return null;
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   if (!email) return null;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex h-screen flex-col overflow-hidden relative">
       {/* Email view header */}
       <div className="border-b p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row items-center justify-between">
           <button onClick={handleBack} className="flex items-center space-x-2 text-blue-600 mb-2 sm:mb-0">
-            <ArrowLeft className="h-5 w-5" />
-            <span>Back</span>
+            <Tooltip text="Go back to email list">
+              <ArrowLeft className="h-5 w-5 " />
+            </Tooltip>
           </button>
-          <h1 className="text-xl font-semibold text-center sm:text-left sm:flex-1">{email.subject}</h1>
+          <h1 className="text-xl font-semibold text-center sm:text-left sm:flex-1 ml-2">{email.subject}</h1>
           <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-            <button onClick={handleReply}><Reply className="h-5 w-5" /></button>
-            <button onClick={handleReply}><Forward className="h-5 w-5" /></button>
-            <button onClick={() => setIsStarred(!isStarred)}>
-              <Star className={`h-5 w-5 ${isStarred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
-            </button>
-            <button onClick={handleTranslate}><Languages className="h-5 w-5" /></button>
-            <button><Archive className="h-5 w-5" /></button>
-            <button onClick={handleDeleteEmail}><Trash2 className="h-5 w-5 text-red-600 hover:text-red-800" /></button>
-            <button 
-              onClick={handleGetSalesforceInfo} 
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200"
-            >
-              Get Info
-            </button>
+            <Tooltip text="Reply to this email">
+              <button onClick={handleReply}><Reply className="h-5 w-5" /></button>
+            </Tooltip>
+            <Tooltip text="Forward this email">
+              <button onClick={handleReply}><Forward className="h-5 w-5" /></button>
+            </Tooltip>
+            {/* <Tooltip text={isStarred ? "Unstar this email" : "Star this email"}>
+              <button onClick={() => setIsStarred(!isStarred)}>
+                <Star className={`h-5 w-5 ${isStarred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+              </button>
+            </Tooltip> */}
+            <Tooltip text="Translate this email">
+              <button onClick={handleTranslate}><Languages className="h-5 w-5" /></button>
+            </Tooltip>
+            <Tooltip text="Delete this email">
+              <button onClick={handleDeleteEmail}><Trash2 className="h-5 w-5 text-red-600 hover:text-red-800" /></button>
+            </Tooltip>
+            <Tooltip text="Get Salesforce info">
+              <button 
+                onClick={handleGetSalesforceInfo} 
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200"
+              >
+                Get Info
+              </button>
+            </Tooltip>
+          </div>
+        </div>
+      </div>
+
+      {/* Sentiment Analysis Dropdown */}
+      <div className="w-full relative" ref={dropdownRef}>
+        <button
+          type="button"
+          className="flex items-center justify-start w-full p-5 font-medium text-gray-500 border border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 hover:bg-gray-100 gap-3 bg-white"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+        >
+          <span className="text-lg">Email Analysis Results</span>
+          <ChevronDown 
+            className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
+              isOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+
+        {/* Dropdown content */}
+        <div
+          className={`absolute left-0 right-0 mt-1 bg-white border rounded-xl  z-50 transition-all duration-200 ${
+            isOpen 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-2 pointer-events-none'
+          }`}
+        >
+          <div className="p-5">
+            <div className="space-y-4">
+                {sentiment ? (
+                    sentiment.split('\n').map((line, index) => {
+                        // Skip empty lines
+                        if (!line.trim()) return null;
+                        const [key, value] = line.split(':').map(item => item.trim());
+                        return (
+                            <div key={index} className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    {getIcon(key)} {/* You may want to adjust this to match your keys */}
+                                    <span className="text-sm font-medium text-gray-700">{key}</span>
+                                </div>
+                                <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${getBadgeClasses(value)}`}>
+                                    {value}
+                                </span>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p className="text-gray-500">No sentiment analysis available.</p> // Fallback message
+                )}
+            </div>
           </div>
         </div>
       </div>
@@ -304,8 +482,10 @@ const EmailView = () => {
             {/* Salesforce details if available */}
             {salesforceDetails && (
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Salesforce Details</h3>
-                <pre className="text-sm text-gray-600">{JSON.stringify(salesforceDetails, null, 2)}</pre>
+                <h3 className="font-medium mb-2">User Details</h3>
+                <div className="text-sm text-gray-600">
+                  {formatSalesforceDetails(salesforceDetails)}
+                </div>
               </div>
             )}
           </div>

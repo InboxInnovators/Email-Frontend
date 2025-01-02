@@ -65,9 +65,9 @@ const EmailItem = ({ email, view }) => {
 
       {isHovered && (
         <div className="flex-shrink-0 flex gap-2">
-          <button className="p-2 hover:bg-gray-100 rounded-full">
+          {/* <button className="p-2 hover:bg-gray-100 rounded-full">
             <ArchiveIcon className="h-5 w-5 text-gray-500" />
-          </button>
+          </button> */}
           <button className="p-2 hover:bg-gray-100 rounded-full">
             <TrashIcon className="h-5 w-5 text-gray-500" />
           </button>
