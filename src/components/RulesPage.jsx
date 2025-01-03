@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useStore from '../useStore';
 import axios from 'axios';
-import { Plus, Trash } from 'lucide-react';
+import { Plus, Trash, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const RulesPage = () => {
@@ -207,9 +207,10 @@ const RulesPage = () => {
         <div className="p-6">
           <button
             onClick={() => navigate('/emails')}
-            className="mb-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="mb-4 inline-flex items-center bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Go to Emails
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back
           </button>
           <h2 className="text-2xl font-bold mb-6">Rule Management</h2>
           
