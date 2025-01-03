@@ -151,7 +151,7 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFo
                 setSelectedFolderId(folder.id); // Set the selected folder ID
               }}
               className={`flex items-center justify-start w-full p-2 rounded-lg transition-colors text-lg
-                ${selectedFolderId === folder.id ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                ${selectedFolderId === folder.id ? 'bg-blue-400 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
             >
               <span className="ml-3">{folder.displayName}</span>
             </button>
@@ -166,7 +166,7 @@ const EmailSidebar = ({ activeView, setActiveView, onComposeClick, folders, onFo
                 setSelectedFolderId(folder.id); // Set the selected folder ID
               }}
               className={`flex items-center justify-start w-full p-2 rounded-lg transition-colors text-lg
-                ${selectedFolderId === folder.id ? 'bg-black text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                ${selectedFolderId === folder.id ? 'bg-blue-400 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
             >
               <span className="ml-3">{folder.displayName}</span>
             </button>

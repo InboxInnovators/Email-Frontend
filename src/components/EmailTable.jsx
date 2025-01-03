@@ -48,7 +48,7 @@ const EmailTable = ({ emails, toggleSelectAll, toggleEmailSelection, toggleStarr
         {emails.map((email) => (
           <div
             key={email.id}
-            className={`flex items-center p-3 border-b border-[#0f4f96] hover:bg-blue-100 cursor-pointer transition duration-200 ${email.selected ? 'bg-blue-100' : ''}`}
+            className={`flex items-center p-3 border-b border-[#0f4f96] hover:bg-blue-100 cursor-pointer transition duration-200 ${email.selected ? 'bg-blue-100' : ''} ${email.isRead ? 'bg-white' : 'bg-gray-100'}`}
             onClick={(e) => handleItemClick(e, email)}
           >
             <input

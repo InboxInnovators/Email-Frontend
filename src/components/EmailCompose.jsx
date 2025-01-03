@@ -12,6 +12,7 @@ gsap.registerPlugin(Draggable);
 const EmailCompose = ({ onClose, to, content }) => {
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState(content || ''); // Use content if provided
+  const [ccRecipients, setCcRecipients] = useState(''); // New state for CC recipients
   const [isComposing, setIsComposing] = useState(false); // State to track AI composition
   const accessToken = useStore((state) => state.accessToken); // Get access token from Zustand store
 
@@ -60,7 +61,8 @@ const EmailCompose = ({ onClose, to, content }) => {
         accessToken,
         subject,
         body,
-        recipients: [to]
+        recipients: [to],
+        ccRecipients: ccRecipients.split(',').map(email => email.trim()) // Split and trim CC recipients
       });
 
       console.log(response.data.message);
@@ -71,54 +73,53 @@ const EmailCompose = ({ onClose, to, content }) => {
       toast.error("Error Sending Email");
     }
   };
-
   const handleAiCompose = async () => {
     if (!body.trim()) {
-      toast.error('Email body cannot be empty.');
-      return;
+        toast.error('Email body cannot be empty.');
+        return;
     }
 
     setIsComposing(true);
     setBody('Generating...'); // Set initial body text immediately
     try {
-      const response = await fetch('http://localhost:5000/api/compose', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          accessToken,
-          subject,
-          body, // Use the current body for AI composition
-        }),
-      });
+        const response = await fetch('http://localhost:5000/api/compose', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                accessToken,
+                subject,
+                body, // Use the current body for AI composition
+            }),
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate email using AI');
-      }
+        if (!response.ok) {
+            throw new Error('Failed to generate email using AI');
+        }
 
-      // Read the stream
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder('utf-8');
-      let done = false;
-      setBody('');
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        const chunk = decoder.decode(value, { stream: true });
-        setBody((prev) => prev + chunk); // Append the chunk to the body
-      }
+        // Parse the JSON response
+        const data = await response.json();
+
+        // Extract the subject from the response
+        const subjectMatch = data.Subject.match(/Subject: (.+)/);
+        if (subjectMatch && subjectMatch[1]) {
+            setSubject(subjectMatch[1]); // Set the extracted subject
+        }
+
+        setBody(data.body); // Assuming the body is also part of the response
     } catch (error) {
-      console.error('Error generating email using AI:', error);
-      toast.error('Error generating email using AI.');
+        console.error('Error generating email using AI:', error);
+        toast.error('Error generating email using AI.');
     } finally {
-      setIsComposing(false);
+        setIsComposing(false);
     }
-  };
+};
 
   const clearFields = () => {
     setSubject('');
     setBody('');
+    setCcRecipients(''); // Clear CC recipients
   };
 
   return (
@@ -166,6 +167,16 @@ const EmailCompose = ({ onClose, to, content }) => {
           placeholder="Subject"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
+          className="mb-4 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
+                   focus:border-navy-400 focus:outline-none transition-colors"
+        />
+        
+        <input
+          type="text"
+          name="cc"
+          placeholder="CC (comma separated)"
+          value={ccRecipients}
+          onChange={(e) => setCcRecipients(e.target.value)}
           className="mb-4 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
                    focus:border-navy-400 focus:outline-none transition-colors"
         />

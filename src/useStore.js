@@ -11,6 +11,8 @@ const useStore = create((set) => ({
     set({ email });
     sessionStorage.setItem('email', email);
   },
+  emails:[],
+  setEmails:(emails)=>set({emails}),
 }));
 
 export default useStore; 

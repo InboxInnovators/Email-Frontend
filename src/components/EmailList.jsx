@@ -98,6 +98,7 @@ const EmailList = ({ view }) => {
           }), // Format the date as DD MMM YEAR
           starred: false, // Default value for starred
           selected: false, // Default value for selected
+          isRead : email.isRead //boolean
         }));
 
         setEmails(formattedEmails);

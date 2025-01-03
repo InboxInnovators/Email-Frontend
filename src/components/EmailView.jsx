@@ -9,7 +9,6 @@ import {
   Trash2,
   Sparkles,
   Languages,
-  Cloudy,
   ChevronDown,
   AlertCircle,
   ThumbsUp,
@@ -18,7 +17,9 @@ import {
   RefreshCcw,
   User,
   AlarmClockCheck,
-  AlarmClockCheckIcon
+  AlarmClockCheckIcon,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 import useStore from '../useStore';
 import EmailCompose from './EmailCompose'; // Import EmailCompose
@@ -27,6 +28,7 @@ import { PDFDocument } from 'pdf-lib'; // Import PDFDocument from pdf-lib
 import SalesforceDetailsModal from './SalesforceDetailsModal'; // Import the new modal component
 import { toast } from 'sonner';
 import Tooltip from './Tooltip'; // Import the Tooltip component
+import SentimentSidebar from './SentimentSidebar'; // Import the SentimentSidebar component
 
 const EmailView = () => {
   const { setEmail } = useStore((state) => state); // Get setEmail from Zustand store
@@ -45,13 +47,14 @@ const EmailView = () => {
   const [isSalesforceModalOpen, setIsSalesforceModalOpen] = useState(false); // State for modal visibility
   const { accessToken } = useStore((state) => state);
   const [sentiment, setSentiment] = useState(null); // State to hold sentiment analysis result
-  const [isOpen, setIsOpen] = useState(false); // State for dropdown
+  const [isLoading, setIsLoading] = useState(true); // State to control loading
   const dropdownRef = useRef(null);
-
+  const [isSentimentVisible, setIsSentimentVisible] = useState(true); // State to control visibility
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSentimentLoading,setIsSentimentLoading]=useState(true);
   // Get email from location state
   const email = location.state?.email;
   console.log('Email from location state:', email); // Log the email from location state
-
   useEffect(() => {
     if (!email) {
       navigate('/emails');
@@ -60,19 +63,56 @@ const EmailView = () => {
       setEmail(email);
       setIsStarred(email?.starred || false);
       fetchAttachments(email.id); // Fetch attachments using the email ID
-      fetchSentimentAnalysis(email.body); // Call sentiment analysis when email is set
+      fetchSentimentAnalysis(email.body , email.subject); // Call sentiment analysis when email is set
     }
   }, [email, navigate, setEmail]);
 
+
+  useEffect(() => {
+
+    if (!email.id || !accessToken) {
+        console.error('Email ID or access token is missing');
+        return;
+    }
+
+    const url = `http://localhost:5000/api/markAsRead`;
+
+    fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ accessToken: accessToken,messageId:email.id }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.message); // Log success message
+    })
+    .catch(error => {
+        console.error('Error marking email as read:', error.message);
+    });
+},[]);
+  
+
   // Function to call sentiment analysis API
-  const fetchSentimentAnalysis = async (emailContent) => {
+  const fetchSentimentAnalysis = async (emailContent , emailSubject) => {
     try {
+      if(!emailContent || emailContent === '' || emailContent == null)
+      {
+        console.log('Could not perform sentiment analysis : No body found!!!');
+        return;
+      }
       const response = await fetch('http://localhost:5000/api/sentiment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ emailContent })
+        body: JSON.stringify({ emailContent , emailSubject })
       });
 
       if (!response.ok) {
@@ -81,7 +121,9 @@ const EmailView = () => {
 
       const data = await response.json();
       const content = data.kwargs.content; // Access the content property
+
       setSentiment(content); // Store the sentiment analysis result
+      setIsSentimentLoading(false);
       console.log('Sentiment analysis result:', content);
     } catch (error) {
       console.error('Error analyzing sentiment:', error);
@@ -309,17 +351,22 @@ const EmailView = () => {
     }
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
+  // Toggle visibility function
+  const toggleSentimentVisibility = () => {
+    setIsSentimentVisible(prev => !prev);
+  };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  // // Close dropdown when clicking outside
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  //       setIsOpen(false);
+  //     }
+  //   };
+
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => document.removeEventListener('mousedown', handleClickOutside);
+  // }, []);
 
   if (!email) return null;
 
@@ -328,7 +375,7 @@ const EmailView = () => {
       {/* Email view header */}
       <div className="border-b p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row items-center justify-between">
-          <button onClick={handleBack} className="flex items-center space-x-2 text-blue-600 mb-2 sm:mb-0">
+          <button onClick={() => navigate('/emails')} className="flex items-center space-x-2 text-blue-600 mb-2 sm:mb-0">
             <Tooltip text="Go back to email list">
               <ArrowLeft className="h-5 w-5 " />
             </Tooltip>
@@ -336,18 +383,13 @@ const EmailView = () => {
           <h1 className="text-xl font-semibold text-center sm:text-left sm:flex-1 ml-2">{email.subject}</h1>
           <div className="flex items-center space-x-2 mt-2 sm:mt-0">
             <Tooltip text="Reply to this email">
-              <button onClick={handleReply}><Reply className="h-5 w-5" /></button>
+              <button onClick={() => setComposeTo(email.sender.address) || setIsComposeOpen(true)}><Reply className="h-5 w-5" /></button>
             </Tooltip>
             <Tooltip text="Forward this email">
-              <button onClick={handleReply}><Forward className="h-5 w-5" /></button>
+              <button onClick={() => setComposeTo(email.sender.address) || setIsComposeOpen(true)}><Forward className="h-5 w-5" /></button>
             </Tooltip>
-            {/* <Tooltip text={isStarred ? "Unstar this email" : "Star this email"}>
-              <button onClick={() => setIsStarred(!isStarred)}>
-                <Star className={`h-5 w-5 ${isStarred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
-              </button>
-            </Tooltip> */}
             <Tooltip text="Translate this email">
-              <button onClick={handleTranslate}><Languages className="h-5 w-5" /></button>
+              <button onClick={() => setIsTranslateOpen(true)}><Languages className="h-5 w-5" /></button>
             </Tooltip>
             <Tooltip text="Delete this email">
               <button onClick={handleDeleteEmail}><Trash2 className="h-5 w-5 text-red-600 hover:text-red-800" /></button>
@@ -364,59 +406,18 @@ const EmailView = () => {
         </div>
       </div>
 
-      {/* Sentiment Analysis Dropdown */}
-      <div className="w-full relative" ref={dropdownRef}>
-        <button
-          type="button"
-          className="flex items-center justify-start w-full p-5 font-medium text-gray-500 border border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 hover:bg-gray-100 gap-3 bg-white"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-expanded={isOpen}
-        >
-          <span className="text-lg">Email Analysis Results</span>
-          <ChevronDown 
-            className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-              isOpen ? 'rotate-180' : ''
-            }`}
-          />
-        </button>
 
-        {/* Dropdown content */}
-        <div
-          className={`absolute left-0 right-0 mt-1 bg-white border rounded-xl  z-50 transition-all duration-200 ${
-            isOpen 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-2 pointer-events-none'
-          }`}
-        >
-          <div className="p-5">
-            <div className="space-y-4">
-                {sentiment ? (
-                    sentiment.split('\n').map((line, index) => {
-                        // Skip empty lines
-                        if (!line.trim()) return null;
-                        const [key, value] = line.split(':').map(item => item.trim());
-                        return (
-                            <div key={index} className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                    {getIcon(key)} {/* You may want to adjust this to match your keys */}
-                                    <span className="text-sm font-medium text-gray-700">{key}</span>
-                                </div>
-                                <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${getBadgeClasses(value)}`}>
-                                    {value}
-                                </span>
-                            </div>
-                        );
-                    })
-                ) : (
-                    <p className="text-gray-500">No sentiment analysis available.</p> // Fallback message
-                )}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Email content */}
-      <div className="flex-1 overflow-auto p-3 sm:p-6">
+      {/* Render the SentimentSidebar on the left side */}
+      <SentimentSidebar 
+        sentiment={sentiment} 
+        isOpen={isSidebarOpen} 
+        setIsOpen={setIsSidebarOpen}
+        isSentimentLoading={isSentimentLoading} 
+      />
+
+      {/* Email content and other components remain unchanged */}
+      <div className="flex-1 overflow-auto p-3 sm:p-6 lg:ml-20">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-4">
             {/* Sender info */}

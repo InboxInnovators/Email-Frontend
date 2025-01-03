@@ -13,7 +13,7 @@ const ProfileMenu = ({ userName, userEmail, onSignOut }) => {
       >
         <img
           className="w-8 h-8 rounded-full"
-          src="https://ui-avatars.com/api/?name=John+Doe"
+          src="https://ui-avatars.com/api/?name=Inbox+Innovators"
           alt="User profile"
         />
       </button>
@@ -25,6 +25,11 @@ const ProfileMenu = ({ userName, userEmail, onSignOut }) => {
             <span className="block text-sm text-gray-500">{userEmail}</span>
           </div>
           <ul>
+            <li>
+              <a href="/rules" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                Rules
+              </a>
+            </li>
             <li>
               <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 Profile

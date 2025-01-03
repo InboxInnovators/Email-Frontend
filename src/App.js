@@ -9,8 +9,8 @@ import PrivateRoute from "./components/routing/PrivateRoute";
 import ProfileMenu from "./components/ProfileMenu";
 import AutomationRulesPage from "./components/AutomationRulesPage";
 import { Toaster } from 'sonner';
-
-const Icon = "/path-to-your-icon.svg";
+import Icon from '../src/EI-Logo.png'
+import RulesPage from "./components/RulesPage";
 
 const WrappedView = () => {
   const { instance } = useMsal();
@@ -133,7 +133,7 @@ const App = ({ instance }) => {
             <Route path="/emails" element={<EmailList />} />
             <Route path="/email/:id" element={<EmailView />} />
           </Route>
-          <Route path="/rules" element={<AutomationRulesPage/>}/>
+          <Route path="/rules" element={<RulesPage/>}/>
         </Routes>
       </Router>
       <Toaster position="top-center" richColors/>
